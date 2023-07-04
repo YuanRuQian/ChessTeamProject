@@ -35,6 +35,8 @@ public class PgnReaderTests
             {
                 TestContext.WriteLine(game.ToString());
                 TestContext.WriteLine();
+                TestContext.WriteLine(game.GetGameInfo());
+                TestContext.WriteLine();
             }
         }
     }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text;
 
 namespace ChessBrowser
 {
@@ -13,9 +14,9 @@ namespace ChessBrowser
         public int WhiteElo { get; set; }
         public int BlackElo { get; set; }
         public char Result { get; set; }
-        public string[] Moves { get; set; }
+        public string Moves { get; set; }
 
-        public ChessGame(string eventName, string site, DateTime eventDate, string round, string whitePlayer, string blackPlayer, int whiteElo, int blackElo, char result, string[] moves)
+        public ChessGame(string eventName, string site, DateTime eventDate, string round, string whitePlayer, string blackPlayer, int whiteElo, int blackElo, char result, string moves)
         {
             EventName = eventName;
             Site = site;
@@ -31,14 +32,33 @@ namespace ChessBrowser
 
         public override string ToString()
         {
-            return $"Event: {EventName}\n" +
-                   $"Site: {Site}\n" +
-                   $"Date: {EventDate}\n" +
-                   $"Round: {Round}\n" +
-                   $"White: {WhitePlayer} ({WhiteElo})\n" +
-                   $"Black: {BlackPlayer} ({BlackElo})\n" +
-                   $"Result: {Result}\n" +
-                   $"Moves: {string.Join(" ", Moves)}";
+            StringBuilder sb = new StringBuilder();
+            sb.AppendLine($"Event: {EventName}");
+            sb.AppendLine($"Site: {Site}");
+            sb.AppendLine($"Event Date: {EventDate.ToString("yyyy.MM.dd")}");
+            sb.AppendLine($"Round: {Round}");
+            sb.AppendLine($"White Player: {WhitePlayer}");
+            sb.AppendLine($"Black Player: {BlackPlayer}");
+            sb.AppendLine($"White Elo: {WhiteElo}");
+            sb.AppendLine($"Black Elo: {BlackElo}");
+            sb.AppendLine($"Result: {Result}");
+            sb.AppendLine("Moves:");
+            sb.AppendLine(string.Join(" ", Moves));
+            return sb.ToString();
         }
+
+        public string GetGameInfo()
+        {
+            StringBuilder sb = new StringBuilder();
+            sb.AppendLine($"Event: {EventName}");
+            sb.AppendLine($"Site: {Site}");
+            sb.AppendLine($"Date: {EventDate.ToString("MM/dd/yyyy hh:mm:ss tt")}");
+            sb.AppendLine($"White: {WhitePlayer} ({WhiteElo})");
+            sb.AppendLine($"Black: {BlackPlayer} ({BlackElo})");
+            sb.AppendLine($"Result: {Result}");
+            return sb.ToString();
+        }
+
+
     }
 }

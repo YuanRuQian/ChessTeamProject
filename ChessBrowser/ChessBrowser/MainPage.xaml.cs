@@ -10,36 +10,44 @@ public partial class MainPage : ContentPage
 		InitializeComponent();
 	}
 
-  /// <summary>
-  /// Handler for the upload button.
-  /// Picks a file and passes it to the database controller
-  /// </summary>
-  /// <param name="sender"></param>
-  /// <param name="e"></param>
-  private async void OnFileUpload( object sender, EventArgs e )
-  {
-    try
+    /// <summary>
+    /// Handler for the upload button.
+    /// Picks a file and passes it to the database controller
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
+    private async void OnFileUpload(object sender, EventArgs e)
     {
-      FileResult fileResult = await FilePicker.Default.PickAsync();
-      if ( fileResult != null )
-      {
-        await Queries.InsertGameData( fileResult.FullPath, this );
-        string fileContents = File.ReadAllText(fileResult.FullPath);
-      }
+        try
+        {
+            // Disable the "Go" button when uploading
+            goButton.IsEnabled = false;
+            FileResult fileResult = await FilePicker.Default.PickAsync();
+            if (fileResult != null)
+            {
+                await Queries.InsertGameData(fileResult.FullPath, this);
+                string fileContents = File.ReadAllText(fileResult.FullPath);
+            }
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine(ex);
+        }
+        finally
+        {
+            // Once the upload is complete, enable the "Go" button if necessary
+            goButton.IsEnabled = true;
+        }
     }
-    catch ( Exception ex )
-    {
-      System.Diagnostics.Debug.WriteLine( ex );
-    }
-  }
 
-  /// <summary>
-  /// Handler for the go button.
-  /// Passes the query parameters to the database controller and displays the result
-  /// </summary>
-  /// <param name="sender"></param>
-  /// <param name="e"></param>
-  private void OnGoClicked( object sender, EventArgs e )
+
+    /// <summary>
+    /// Handler for the go button.
+    /// Passes the query parameters to the database controller and displays the result
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
+    private void OnGoClicked( object sender, EventArgs e )
   {
     string winner = null;
     if ( whiteWon.IsChecked )

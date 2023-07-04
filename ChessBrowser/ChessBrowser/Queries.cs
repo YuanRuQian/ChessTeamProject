@@ -43,11 +43,11 @@ namespace ChessBrowser
                             eID = Convert.ToUInt64(lastIdCommand.ExecuteScalar());
                         }
 
-                        // Insert into the Players table
-                        string insertBlackPlayerQuery = "INSERT IGNORE INTO Players (Name, Elo) VALUES (@BlackPlayerName, @BlackPlayerElo)";
-                        string insertWhitePlayerQuery = "INSERT IGNORE INTO Players (Name, Elo) VALUES (@WhitePlayerName, @WhitePlayerElo)";
 
-                        using (MySqlCommand whitePlayerCommand = new MySqlCommand(insertWhitePlayerQuery, conn))
+                        string insertAndUpdateWhitePlayerQuery = "INSERT INTO Players (Name, Elo) VALUES (@WhitePlayerName, @WhitePlayerElo) " +
+                            "ON DUPLICATE KEY UPDATE Elo = GREATEST(Elo, @WhitePlayerElo)";
+
+                        using (MySqlCommand whitePlayerCommand = new MySqlCommand(insertAndUpdateWhitePlayerQuery, conn))
                         {
                             whitePlayerCommand.Parameters.AddWithValue("@WhitePlayerName", game.WhitePlayer);
                             whitePlayerCommand.Parameters.AddWithValue("@WhitePlayerElo", game.WhiteElo);
@@ -60,7 +60,10 @@ namespace ChessBrowser
                             whitePlayerID = Convert.ToUInt64(lastIdCommand.ExecuteScalar());
                         }
 
-                        using (MySqlCommand blackPlayerCommand = new MySqlCommand(insertBlackPlayerQuery, conn))
+                        string insertAndUpdateBlackPlayerQuery = "INSERT INTO Players (Name, Elo) VALUES (@BlackPlayerName, @BlackPlayerElo) " +
+                            "ON DUPLICATE KEY UPDATE Elo = GREATEST(Elo, @BlackPlayerElo)";
+
+                        using (MySqlCommand blackPlayerCommand = new MySqlCommand(insertAndUpdateBlackPlayerQuery, conn))
                         {
                             blackPlayerCommand.Parameters.AddWithValue("@BlackPlayerName", game.BlackPlayer);
                             blackPlayerCommand.Parameters.AddWithValue("@BlackPlayerElo", game.BlackElo);
@@ -87,10 +90,10 @@ namespace ChessBrowser
                             gameCommand.Parameters.AddWithValue("@eID", eID);
                             gameCommand.ExecuteNonQuery();
                         }
+
+                        await mainPage.NotifyWorkItemCompleted();
                     }
 
-
-                    await mainPage.NotifyWorkItemCompleted();
                 }
                 catch (Exception e)
                 {

@@ -179,6 +179,7 @@
                     </HorizontalStackLayout>
 
                     <Button
+                    x:Name="goButton"
                     Text="Go"
                     Clicked="OnGoClicked"
                     />

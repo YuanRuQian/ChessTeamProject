@@ -145,19 +145,19 @@ namespace ChessBrowser
                     conn.Open();
 
                     // Generate and execute an SQL command,
-                    string query = "SELECT e.Name AS EventName, e.Site, e.Date, " +
-                        "p1.Name AS WhitePlayerName, p2.Name AS BlackPlayerName, " +
-                        "p1.Elo AS WhiteElo, p2.Elo AS BlackElo, g.Result, g.Moves " +
-                        "From Events e JOIN Games g ON e.eID = g.eID " +
-                        "JOIN Players p1 ON g.WhitePlayer = p1.pID " +
-                        "JOIN Players p2 ON g.BlackPlayer = p2.pID WHERE TRUE";
+                    string query = "SELECT e.Name AS EventName, e.Site, e.Date,\n" +
+                        "p1.Name AS WhitePlayerName, p2.Name AS BlackPlayerName,\n" +
+                        "p1.Elo AS WhiteElo, p2.Elo AS BlackElo, g.Result, g.Moves\n" +
+                        "FROM Events e JOIN Games g ON e.eID = g.eID\n" +
+                        "JOIN Players p1 ON g.WhitePlayer = p1.pID\n" +
+                        "JOIN Players p2 ON g.BlackPlayer = p2.pID WHERE TRUE\n";
                     if (white != null)
                     {
-                        query += " AND WhitePlayerName=@WhitePlayerName";
+                        query += " AND p1.Name=@WhitePlayerName";
                     }
                     if (black != null)
                     {
-                        query += " AND BlackPlayerName=@BlackPlayerName";
+                        query += " AND p2.Name=@BlackPlayerName";
                     }
                     if (opening != null)
                     {
@@ -169,8 +169,9 @@ namespace ChessBrowser
                     }
                     if (useDate)
                     {
-                        query += " AND Date>@StartDate AND Date<@EndDate";
+                        query += " AND Date>=@StartDate AND Date<=@EndDate";
                     }
+
                     MySqlCommand queryCommand = new MySqlCommand(query, conn);
                     if (white != null)
                     {
@@ -193,6 +194,7 @@ namespace ChessBrowser
                         queryCommand.Parameters.AddWithValue("@StartDate", start);
                         queryCommand.Parameters.AddWithValue("@EndDate", end);
                     }
+                    Console.WriteLine(query);
                     // parse the results into an appropriate string and return it.
                     using (MySqlDataReader reader = queryCommand.ExecuteReader())
                     {
@@ -207,7 +209,7 @@ namespace ChessBrowser
                             parsedResult += "\nResult: " + reader["Result"];
                             if (showMoves)
                             {
-                                parsedResult += "\nMoves:" + reader["Moves"];
+                                parsedResult += "\nMoves: " + reader["Moves"];
                             }
                         }
                     }
@@ -218,7 +220,7 @@ namespace ChessBrowser
                 }
             }
 
-            return numRows + " results\n" + parsedResult;
+            return numRows + " results" + parsedResult;
         }
     }
 }

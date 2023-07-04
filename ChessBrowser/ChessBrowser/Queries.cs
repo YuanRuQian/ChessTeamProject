@@ -52,8 +52,8 @@ namespace ChessBrowser
                         }
 
                         // Insert into the Players table
-                        string insertWhitePlayerQuery = "INSERT IGNORE INTO Players (Name, Elo) VALUES (@BlackPlayerName, @BlackPlayerElo)";
-                        string insertBlackPlayerQuery = "INSERT IGNORE INTO Players (Name, Elo) VALUES (@WhitePlayerName, @WhitePlayerElo)";
+                        string insertBlackPlayerQuery = "INSERT IGNORE INTO Players (Name, Elo) VALUES (@BlackPlayerName, @BlackPlayerElo)";
+                        string insertWhitePlayerQuery = "INSERT IGNORE INTO Players (Name, Elo) VALUES (@WhitePlayerName, @WhitePlayerElo)";
 
                         using (MySqlCommand whitePlayerCommand = new MySqlCommand(insertWhitePlayerQuery, conn))
                         {

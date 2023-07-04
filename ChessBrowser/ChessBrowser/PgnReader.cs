@@ -1,5 +1,7 @@
-﻿using System.Globalization;
+﻿using System;
+using System.Globalization;
 using System.Text.RegularExpressions;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 
 
 namespace ChessBrowser
@@ -14,11 +16,15 @@ namespace ChessBrowser
             // Split PGN text into individual games
             string[] gameTexts = Regex.Split(pgnText, @"\n\n");
 
-            foreach (string gameText in gameTexts)
+            for (int i = 0; i < gameTexts.Length; i += 2)
             {
+                string gameText = gameTexts[i];
+                string movesText = i+1 < gameTexts.Length ? gameTexts[i + 1] : "";
+
                 ChessGame game = ParseGame(gameText);
                 if (game != null)
                 {
+                    game.Moves = movesText;
                     games.Add(game);
                 }
             }
@@ -59,7 +65,14 @@ namespace ChessBrowser
                 // Extract tag values
                 string eventName = GetTagValue(tagMatches, "Event");
                 string site = GetTagValue(tagMatches, "Site");
-                DateTime eventDate = DateTime.ParseExact(GetTagValue(tagMatches, "EventDate"), "yyyy.MM.dd", CultureInfo.InvariantCulture);
+
+                string eventDateStr = GetTagValue(tagMatches, "EventDate");
+                DateTime eventDate;
+
+                if (!DateTime.TryParseExact(eventDateStr, "yyyy.MM.dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out eventDate)) { 
+                    eventDate = DateTime.MinValue;
+                }
+
                 string round = GetTagValue(tagMatches, "Round");
                 string whitePlayer = GetTagValue(tagMatches, "White");
                 string blackPlayer = GetTagValue(tagMatches, "Black");
@@ -72,14 +85,10 @@ namespace ChessBrowser
                 // Parse result
                 char resultChar = ParseResult(result);
 
-                // Extract moves
-                string moveText = Regex.Replace(gameText, @"\[[^\]]+\]", "");
-                string[] moves = moveText.Split(new string[] { "\r\n", "\n" }, StringSplitOptions.RemoveEmptyEntries);
-
                 // Create a new chess game object
-                game = new ChessGame(eventName, site, eventDate, round, whitePlayer, blackPlayer, whiteElo, blackElo, resultChar, moves);
+                game = new ChessGame(eventName, site, eventDate, round, whitePlayer, blackPlayer, whiteElo, blackElo, resultChar, "");
 
-         
+
             }
 
             return game;

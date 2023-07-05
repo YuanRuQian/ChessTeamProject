@@ -38,9 +38,14 @@ namespace ChessBrowser
 
                         // Retrieve the generated eID
                         ulong eID;
-                        using (MySqlCommand lastIdCommand = new MySqlCommand("SELECT LAST_INSERT_ID()", conn))
+                        // Retrieve the eID of the event
+                        string eventIdQuery = "SELECT eID FROM Events WHERE Name = @Name AND Date = @Date AND Site = @Site";
+                        using (MySqlCommand eventIdCommand = new MySqlCommand(eventIdQuery, conn))
                         {
-                            eID = Convert.ToUInt64(lastIdCommand.ExecuteScalar());
+                            eventIdCommand.Parameters.AddWithValue("@Name", game.EventName);
+                            eventIdCommand.Parameters.AddWithValue("@Site", game.Site);
+                            eventIdCommand.Parameters.AddWithValue("@Date", game.EventDate);
+                            eID = Convert.ToUInt64(eventIdCommand.ExecuteScalar());
                         }
 
 
@@ -55,9 +60,12 @@ namespace ChessBrowser
                         }
 
                         ulong whitePlayerID;
-                        using (MySqlCommand lastIdCommand = new MySqlCommand("SELECT LAST_INSERT_ID()", conn))
+                        // Retrieve the pID of the white player
+                        string whitePlayerIdQuery = "SELECT pID FROM Players WHERE Name = @WhitePlayerName";
+                        using (MySqlCommand whitePlayerIdCommand = new MySqlCommand(whitePlayerIdQuery, conn))
                         {
-                            whitePlayerID = Convert.ToUInt64(lastIdCommand.ExecuteScalar());
+                            whitePlayerIdCommand.Parameters.AddWithValue("@WhitePlayerName", game.WhitePlayer);
+                            whitePlayerID = Convert.ToUInt64(whitePlayerIdCommand.ExecuteScalar());
                         }
 
                         string insertAndUpdateBlackPlayerQuery = "INSERT INTO Players (Name, Elo) VALUES (@BlackPlayerName, @BlackPlayerElo) " +
@@ -72,9 +80,11 @@ namespace ChessBrowser
 
                         // Retrieve the generated pIDs
                         ulong blackPlayerID;
-                        using (MySqlCommand lastIdCommand = new MySqlCommand("SELECT LAST_INSERT_ID()", conn))
+                        string blackPlayerIdQuery = "SELECT pID FROM Players WHERE Name = @BlackPlayerName";
+                        using (MySqlCommand blackPlayerIdCommand = new MySqlCommand(blackPlayerIdQuery, conn))
                         {
-                            blackPlayerID = Convert.ToUInt64(lastIdCommand.ExecuteScalar());
+                            blackPlayerIdCommand.Parameters.AddWithValue("@BlackPlayerName", game.BlackPlayer);
+                            blackPlayerID = Convert.ToUInt64(blackPlayerIdCommand.ExecuteScalar());
                         }
 
                         // Insert into the Games table
@@ -84,7 +94,7 @@ namespace ChessBrowser
                         {
                             gameCommand.Parameters.AddWithValue("@Round", game.Round);
                             gameCommand.Parameters.AddWithValue("@Result", game.Result.ToString());
-                            gameCommand.Parameters.AddWithValue("@Moves", string.Join(" ", game.Moves));
+                            gameCommand.Parameters.AddWithValue("@Moves", game.Moves);
                             gameCommand.Parameters.AddWithValue("@BlackPlayer", blackPlayerID);
                             gameCommand.Parameters.AddWithValue("@WhitePlayer", whitePlayerID);
                             gameCommand.Parameters.AddWithValue("@eID", eID);

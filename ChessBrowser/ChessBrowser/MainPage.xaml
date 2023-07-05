@@ -118,22 +118,15 @@
 
                     </HorizontalStackLayout>
 
+<HorizontalStackLayout Spacing="15" Padding="15" VerticalOptions="Center" HorizontalOptions="Start">
+    <Label Text="Winner" />
+    <RadioButton Content="White" x:Name="whiteWon" Style="{StaticResource WhiteRadioButtonStyle}" />
+    <RadioButton Content="Black" x:Name="blackWon" Style="{StaticResource WhiteRadioButtonStyle}" />
+    <RadioButton Content="Draw" x:Name="drawGame" Style="{StaticResource WhiteRadioButtonStyle}" />
+    <RadioButton Content="Any" x:Name="anyWinner" IsChecked="true" Style="{StaticResource WhiteRadioButtonStyle}" />
+</HorizontalStackLayout>
 
-                    <HorizontalStackLayout
-                Spacing="15"
-                Padding="15"
-                VerticalOptions="Center"
-                HorizontalOptions="Start"
-                >
-                        <Label
-                    Text="Winner"
-                    />
-                        <RadioButton Content="White" x:Name="whiteWon"/>
-                        <RadioButton Content="Black" x:Name="blackWon"/>
-                        <RadioButton Content="Draw" x:Name="drawGame"/>
-                        <RadioButton Content="Any" x:Name="anyWinner"
-                 IsChecked="true" />
-                    </HorizontalStackLayout>
+
 
                     <HorizontalStackLayout
                 Spacing="15"

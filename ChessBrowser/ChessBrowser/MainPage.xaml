@@ -58,6 +58,7 @@
                 HorizontalOptions="Fill"
                 >
                     <Button
+                        x:Name="uploadButton"
                     Text="Upload PGN File"
                     Clicked="OnFileUpload"
                     />

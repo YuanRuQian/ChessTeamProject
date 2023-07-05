@@ -47,36 +47,43 @@ public partial class MainPage : ContentPage
     /// </summary>
     /// <param name="sender"></param>
     /// <param name="e"></param>
-    private void OnGoClicked( object sender, EventArgs e )
-  {
-    string winner = null;
-    if ( whiteWon.IsChecked )
+    private void OnGoClicked(object sender, EventArgs e)
     {
-      winner = "W";
-    }
-    else if ( blackWon.IsChecked )
-    {
-      winner = "B";
-    }
-    else if ( drawGame.IsChecked )
-    {
-      winner = "D";
-    }
-    string wp = whiteplayer.Text == "" ? null : whiteplayer.Text;
-    string bp = blackplayer.Text == "" ? null : blackplayer.Text;
-    string open = openingmove.Text == "" ? null : openingmove.Text;
-    var res = Queries.PerformQuery(wp, bp, open,
-            winner, filterByDate.IsChecked, startDate.Date, endDate.Date,
-            showMoves.IsChecked, this);
+        // Disable the upload button when searching
+        uploadButton.IsEnabled = false;
 
-    outputText.Text = res;
-  }
+        string winner = null;
+        if (whiteWon.IsChecked)
+        {
+            winner = "W";
+        }
+        else if (blackWon.IsChecked)
+        {
+            winner = "B";
+        }
+        else if (drawGame.IsChecked)
+        {
+            winner = "D";
+        }
 
-  /// <summary>
-  /// Tell the progress bar how many "work items" you're going to perform
-  /// </summary>
-  /// <param name="numItems"></param>
-  public void SetNumWorkItems( int numItems )
+        string wp = string.IsNullOrEmpty(whiteplayer.Text) ? null : whiteplayer.Text;
+        string bp = string.IsNullOrEmpty(blackplayer.Text) ? null : blackplayer.Text;
+        string open = string.IsNullOrEmpty(openingmove.Text) ? null : openingmove.Text;
+
+        var res = Queries.PerformQuery(wp, bp, open, winner, filterByDate.IsChecked,
+            startDate.Date, endDate.Date, showMoves.IsChecked, this);
+
+        outputText.Text = res;
+
+        // Once the search is complete, enable the upload button if necessary
+        uploadButton.IsEnabled = true;
+    }
+
+    /// <summary>
+    /// Tell the progress bar how many "work items" you're going to perform
+    /// </summary>
+    /// <param name="numItems"></param>
+    public void SetNumWorkItems( int numItems )
   {
     numWorkItems = numItems;
     workItemsCompleted = 0;

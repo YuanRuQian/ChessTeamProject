@@ -117,40 +117,105 @@ namespace ChessBrowser
         /// <param name="end">The end of the date range</param>
         /// <param name="showMoves">True if the returned data should include the PGN moves</param>
         /// <returns>A string separated by newlines containing the filtered games</returns>
-        internal static string PerformQuery( string white, string black, string opening,
+        internal static string PerformQuery(string white, string black, string opening,
       string winner, bool useDate, DateTime start, DateTime end, bool showMoves,
-      MainPage mainPage )
-    {
-      // This will build a connection string to your user's database on atr,
-      // assuimg you've typed a user and password in the GUI
-      string connection = mainPage.GetConnectionString();
-
-      // Build up this string containing the results from your query
-      string parsedResult = "";
-
-      // Use this to count the number of rows returned by your query
-      // (see below return statement)
-      int numRows = 0;
-
-      using ( MySqlConnection conn = new MySqlConnection( connection ) )
-      {
-        try
+      MainPage mainPage)
         {
-          // Open a connection
-          conn.Open();
+            // This will build a connection string to your user's database on atr,
+            // assuimg you've typed a user and password in the GUI
+            string connection = mainPage.GetConnectionString();
 
-          // TODO:
-          //       Generate and execute an SQL command,
-          //       then parse the results into an appropriate string and return it.
-        }
-        catch ( Exception e )
-        {
-          System.Diagnostics.Debug.WriteLine( e.Message );
-        }
-      }
+            // Build up this string containing the results from your query
+            string parsedResult = "";
 
-      return numRows + " results\n" + parsedResult;
+            // Use this to count the number of rows returned by your query
+            // (see below return statement)
+            int numRows = 0;
+
+            using (MySqlConnection conn = new MySqlConnection(connection))
+            {
+                try
+                {
+                    // Open a connection
+                    conn.Open();
+
+                    // Generate and execute an SQL command,
+                    string query = "SELECT e.Name AS EventName, e.Site, e.Date,\n" +
+                        "p1.Name AS WhitePlayerName, p2.Name AS BlackPlayerName,\n" +
+                        "p1.Elo AS WhiteElo, p2.Elo AS BlackElo, g.Result, g.Moves\n" +
+                        "FROM Events e JOIN Games g ON e.eID = g.eID\n" +
+                        "JOIN Players p1 ON g.WhitePlayer = p1.pID\n" +
+                        "JOIN Players p2 ON g.BlackPlayer = p2.pID WHERE TRUE\n";
+                    if (white != null)
+                    {
+                        query += " AND p1.Name=@WhitePlayerName";
+                    }
+                    if (black != null)
+                    {
+                        query += " AND p2.Name=@BlackPlayerName";
+                    }
+                    if (opening != null)
+                    {
+                        query += " AND Moves LIKE @OpeningMove";
+                    }
+                    if (winner != null)
+                    {
+                        query += " AND Result=@Result";
+                    }
+                    if (useDate)
+                    {
+                        query += " AND Date>=@StartDate AND Date<=@EndDate";
+                    }
+
+                    MySqlCommand queryCommand = new MySqlCommand(query, conn);
+                    if (white != null)
+                    {
+                        queryCommand.Parameters.AddWithValue("@WhitePlayerName", white);
+                    }
+                    if (black != null)
+                    {
+                        queryCommand.Parameters.AddWithValue("@BlackPlayerName", black);
+                    }
+                    if (opening != null)
+                    {
+                        queryCommand.Parameters.AddWithValue("@OpeningMove", opening + "%");
+                    }
+                    if (winner != null)
+                    {
+                        queryCommand.Parameters.AddWithValue("@Result", winner);
+                    }
+                    if (useDate)
+                    {
+                        queryCommand.Parameters.AddWithValue("@StartDate", start);
+                        queryCommand.Parameters.AddWithValue("@EndDate", end);
+                    }
+                    Console.WriteLine(query);
+                    // parse the results into an appropriate string and return it.
+                    using (MySqlDataReader reader = queryCommand.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            numRows += 1;
+                            parsedResult += "\n\nEvent: " + reader["EventName"];
+                            parsedResult += "\nSite: " + reader["Site"];
+                            parsedResult += "\nDate: " + reader["Date"];
+                            parsedResult += "\nWhite: " + reader["WhitePlayerName"] + " (" + reader["WhiteElo"] + ")";
+                            parsedResult += "\nBlack: " + reader["BlackPlayerName"] + " (" + reader["BlackElo"] + ")";
+                            parsedResult += "\nResult: " + reader["Result"];
+                            if (showMoves)
+                            {
+                                parsedResult += "\nMoves: " + reader["Moves"];
+                            }
+                        }
+                    }
+                }
+                catch (Exception e)
+                {
+                    System.Diagnostics.Debug.WriteLine(e.Message);
+                }
+            }
+
+            return numRows + " results" + parsedResult;
+        }
     }
-
-  }
 }

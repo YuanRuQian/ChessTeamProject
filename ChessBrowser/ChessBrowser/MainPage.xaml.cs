@@ -106,10 +106,7 @@ public partial class MainPage : ContentPage
   /// <returns></returns>
   internal string GetConnectionString()
   {
-        // TODO: use input data
-        // return "server=cs-db.eng.utah.edu;database=" + username.Text + ";uid=" + username.Text + ";password=" + password.Text;
-        return "server=155.98.12.109;database=" + "Team12ChessProject" + ";uid=" + "u1428543" + ";password=" + "#UH68gGTxKF#mDm";
-
-    }
+        return "server=155.98.12.109;database=Team12ChessProject;uid=" + username.Text + ";password=" + password.Text;
+  }
 }
 

@@ -1,4 +1,5 @@
-﻿using MySqlConnector;
+﻿using System.Text.RegularExpressions;
+using MySqlConnector;
 
 namespace ChessBrowser
 {
@@ -40,11 +41,15 @@ namespace ChessBrowser
                         ulong eID;
                         // Retrieve the eID of the event
                         string eventIdQuery = "SELECT eID FROM Events WHERE Name = @Name AND Date = @Date AND Site = @Site";
+
                         using (MySqlCommand eventIdCommand = new MySqlCommand(eventIdQuery, conn))
                         {
                             eventIdCommand.Parameters.AddWithValue("@Name", game.EventName);
                             eventIdCommand.Parameters.AddWithValue("@Site", game.Site);
                             eventIdCommand.Parameters.AddWithValue("@Date", game.EventDate);
+                            Console.WriteLine($"name: {game.EventName}");
+                            Console.WriteLine($"site: {game.Site}");
+                            Console.WriteLine($"date: {game.EventDate}");
                             eID = Convert.ToUInt64(eventIdCommand.ExecuteScalar());
                         }
 
@@ -107,8 +112,10 @@ namespace ChessBrowser
                 }
                 catch (Exception e)
                 {
-                    System.Diagnostics.Debug.WriteLine(e.Message);
+                    System.Diagnostics.Debug.WriteLine($"An error occurred: {e.Message}");
+                    System.Diagnostics.Debug.WriteLine($"Stack Trace: {e.StackTrace}");
                 }
+
             }
         }
 

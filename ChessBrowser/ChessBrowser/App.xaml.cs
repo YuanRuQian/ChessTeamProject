@@ -1,4 +1,6 @@
-﻿namespace ChessBrowser;
+﻿using System.Text.RegularExpressions;
+
+namespace ChessBrowser;
 
 public partial class App : Application
 {
@@ -6,5 +8,6 @@ public partial class App : Application
 	{
 		InitializeComponent();
     MainPage = new NavigationPage( new MainPage() );
-	}
+
+    }
 }

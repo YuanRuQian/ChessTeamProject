@@ -107,6 +107,7 @@ public partial class MainPage : ContentPage
   internal string GetConnectionString()
   {
         return "server=155.98.12.109;database=Team12ChessProject;uid=" + username.Text + ";password=" + password.Text;
-  }
+
+    }
 }
 

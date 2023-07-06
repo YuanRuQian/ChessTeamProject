@@ -1,5 +1,7 @@
 ﻿using System.Globalization;
+using System.Text;
 using System.Text.RegularExpressions;
+using GameController;
 
 
 namespace ChessBrowser
@@ -63,7 +65,6 @@ namespace ChessBrowser
                 // Extract tag values
                 string eventName = GetTagValue(tagMatches, "Event");
                 string site = GetTagValue(tagMatches, "Site");
-
                 string eventDateStr = GetTagValue(tagMatches, "EventDate");
                 DateTime eventDate;
 

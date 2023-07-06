@@ -64,6 +64,10 @@ namespace ChessBrowser
             {
                 // Extract tag values
                 string eventName = GetTagValue(tagMatches, "Event");
+
+                // filter out illegal characters
+                eventName = Regex.Replace(eventName, @"[^\p{L}\p{N}\p{P}\p{Z}]", "");
+
                 string site = GetTagValue(tagMatches, "Site");
                 string eventDateStr = GetTagValue(tagMatches, "EventDate");
                 DateTime eventDate;

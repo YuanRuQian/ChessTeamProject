@@ -47,9 +47,6 @@ namespace ChessBrowser
                             eventIdCommand.Parameters.AddWithValue("@Name", game.EventName);
                             eventIdCommand.Parameters.AddWithValue("@Site", game.Site);
                             eventIdCommand.Parameters.AddWithValue("@Date", game.EventDate);
-                            Console.WriteLine($"name: {game.EventName}");
-                            Console.WriteLine($"site: {game.Site}");
-                            Console.WriteLine($"date: {game.EventDate}");
                             eID = Convert.ToUInt64(eventIdCommand.ExecuteScalar());
                         }
 

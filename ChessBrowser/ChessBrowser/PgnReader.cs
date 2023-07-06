@@ -14,7 +14,8 @@ namespace ChessBrowser
             List<ChessGame> games = new List<ChessGame>();
 
             // Split PGN text into individual games
-            string[] gameTexts = Regex.Split(pgnText, @"\n\n");
+            // there might be additional carriage return characters (\r) present before the newline characters
+            string[] gameTexts = Regex.Split(pgnText, @"\r?\n\r?\n");
 
             for (int i = 0; i < gameTexts.Length; i += 2)
             {

@@ -1,16 +1,9 @@
-﻿using Microsoft.Maui.Controls;
+﻿using System.Text.RegularExpressions;
 using MySqlConnector;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Security.Cryptography;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ChessBrowser
 {
-  internal class Queries
+    internal class Queries
   {
 
         /// <summary>
@@ -46,16 +39,22 @@ namespace ChessBrowser
 
                         // Retrieve the generated eID
                         ulong eID;
-                        using (MySqlCommand lastIdCommand = new MySqlCommand("SELECT LAST_INSERT_ID()", conn))
+                        // Retrieve the eID of the event
+                        string eventIdQuery = "SELECT eID FROM Events WHERE Name = @Name AND Date = @Date AND Site = @Site";
+
+                        using (MySqlCommand eventIdCommand = new MySqlCommand(eventIdQuery, conn))
                         {
-                            eID = Convert.ToUInt64(lastIdCommand.ExecuteScalar());
+                            eventIdCommand.Parameters.AddWithValue("@Name", game.EventName);
+                            eventIdCommand.Parameters.AddWithValue("@Site", game.Site);
+                            eventIdCommand.Parameters.AddWithValue("@Date", game.EventDate);
+                            eID = Convert.ToUInt64(eventIdCommand.ExecuteScalar());
                         }
 
-                        // Insert into the Players table
-                        string insertBlackPlayerQuery = "INSERT IGNORE INTO Players (Name, Elo) VALUES (@BlackPlayerName, @BlackPlayerElo)";
-                        string insertWhitePlayerQuery = "INSERT IGNORE INTO Players (Name, Elo) VALUES (@WhitePlayerName, @WhitePlayerElo)";
 
-                        using (MySqlCommand whitePlayerCommand = new MySqlCommand(insertWhitePlayerQuery, conn))
+                        string insertAndUpdateWhitePlayerQuery = "INSERT INTO Players (Name, Elo) VALUES (@WhitePlayerName, @WhitePlayerElo) " +
+                            "ON DUPLICATE KEY UPDATE Elo = GREATEST(Elo, @WhitePlayerElo)";
+
+                        using (MySqlCommand whitePlayerCommand = new MySqlCommand(insertAndUpdateWhitePlayerQuery, conn))
                         {
                             whitePlayerCommand.Parameters.AddWithValue("@WhitePlayerName", game.WhitePlayer);
                             whitePlayerCommand.Parameters.AddWithValue("@WhitePlayerElo", game.WhiteElo);
@@ -63,12 +62,18 @@ namespace ChessBrowser
                         }
 
                         ulong whitePlayerID;
-                        using (MySqlCommand lastIdCommand = new MySqlCommand("SELECT LAST_INSERT_ID()", conn))
+                        // Retrieve the pID of the white player
+                        string whitePlayerIdQuery = "SELECT pID FROM Players WHERE Name = @WhitePlayerName";
+                        using (MySqlCommand whitePlayerIdCommand = new MySqlCommand(whitePlayerIdQuery, conn))
                         {
-                            whitePlayerID = Convert.ToUInt64(lastIdCommand.ExecuteScalar());
+                            whitePlayerIdCommand.Parameters.AddWithValue("@WhitePlayerName", game.WhitePlayer);
+                            whitePlayerID = Convert.ToUInt64(whitePlayerIdCommand.ExecuteScalar());
                         }
 
-                        using (MySqlCommand blackPlayerCommand = new MySqlCommand(insertBlackPlayerQuery, conn))
+                        string insertAndUpdateBlackPlayerQuery = "INSERT INTO Players (Name, Elo) VALUES (@BlackPlayerName, @BlackPlayerElo) " +
+                            "ON DUPLICATE KEY UPDATE Elo = GREATEST(Elo, @BlackPlayerElo)";
+
+                        using (MySqlCommand blackPlayerCommand = new MySqlCommand(insertAndUpdateBlackPlayerQuery, conn))
                         {
                             blackPlayerCommand.Parameters.AddWithValue("@BlackPlayerName", game.BlackPlayer);
                             blackPlayerCommand.Parameters.AddWithValue("@BlackPlayerElo", game.BlackElo);
@@ -77,9 +82,11 @@ namespace ChessBrowser
 
                         // Retrieve the generated pIDs
                         ulong blackPlayerID;
-                        using (MySqlCommand lastIdCommand = new MySqlCommand("SELECT LAST_INSERT_ID()", conn))
+                        string blackPlayerIdQuery = "SELECT pID FROM Players WHERE Name = @BlackPlayerName";
+                        using (MySqlCommand blackPlayerIdCommand = new MySqlCommand(blackPlayerIdQuery, conn))
                         {
-                            blackPlayerID = Convert.ToUInt64(lastIdCommand.ExecuteScalar());
+                            blackPlayerIdCommand.Parameters.AddWithValue("@BlackPlayerName", game.BlackPlayer);
+                            blackPlayerID = Convert.ToUInt64(blackPlayerIdCommand.ExecuteScalar());
                         }
 
                         // Insert into the Games table
@@ -89,21 +96,23 @@ namespace ChessBrowser
                         {
                             gameCommand.Parameters.AddWithValue("@Round", game.Round);
                             gameCommand.Parameters.AddWithValue("@Result", game.Result.ToString());
-                            gameCommand.Parameters.AddWithValue("@Moves", string.Join(" ", game.Moves));
+                            gameCommand.Parameters.AddWithValue("@Moves", game.Moves);
                             gameCommand.Parameters.AddWithValue("@BlackPlayer", blackPlayerID);
                             gameCommand.Parameters.AddWithValue("@WhitePlayer", whitePlayerID);
                             gameCommand.Parameters.AddWithValue("@eID", eID);
                             gameCommand.ExecuteNonQuery();
                         }
+
+                        await mainPage.NotifyWorkItemCompleted();
                     }
 
-
-                    await mainPage.NotifyWorkItemCompleted();
                 }
                 catch (Exception e)
                 {
-                    System.Diagnostics.Debug.WriteLine(e.Message);
+                    System.Diagnostics.Debug.WriteLine($"An error occurred: {e.Message}");
+                    System.Diagnostics.Debug.WriteLine($"Stack Trace: {e.StackTrace}");
                 }
+
             }
         }
 

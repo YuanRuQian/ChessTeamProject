@@ -1,7 +1,7 @@
-﻿using System;
-using System.Globalization;
+﻿using System.Globalization;
+using System.Text;
 using System.Text.RegularExpressions;
-using Microsoft.EntityFrameworkCore.Diagnostics;
+using GameController;
 
 
 namespace ChessBrowser
@@ -14,7 +14,8 @@ namespace ChessBrowser
             List<ChessGame> games = new List<ChessGame>();
 
             // Split PGN text into individual games
-            string[] gameTexts = Regex.Split(pgnText, @"\n\n");
+            // there might be additional carriage return characters (\r) present before the newline characters
+            string[] gameTexts = Regex.Split(pgnText, @"\r?\n\r?\n");
 
             for (int i = 0; i < gameTexts.Length; i += 2)
             {
@@ -64,8 +65,11 @@ namespace ChessBrowser
             {
                 // Extract tag values
                 string eventName = GetTagValue(tagMatches, "Event");
-                string site = GetTagValue(tagMatches, "Site");
 
+                // filter out illegal characters
+                eventName = Regex.Replace(eventName, @"[^\p{L}\p{N}\p{P}\p{Z}]", "");
+
+                string site = GetTagValue(tagMatches, "Site");
                 string eventDateStr = GetTagValue(tagMatches, "EventDate");
                 DateTime eventDate;
 

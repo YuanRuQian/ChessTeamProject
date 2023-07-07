@@ -1,12 +1,23 @@
 ﻿namespace ChessBrowser.Tests;
 using MySqlConnector;
 using System.IO;
+using Microsoft.Extensions.Configuration;
 
 [TestFixture]
 public class PerformQueryTests
 {
     // input your uid and password before running the test
-    static string connection = "server=atr.eng.utah.edu;database = Team12ChessProject;uid = ;password = ";
+    static string connection;
+
+    [SetUp]
+    public void Init() {
+        var configuration = new ConfigurationBuilder()
+        .AddJsonFile("appsettings.json")
+        .Build();
+        string password = configuration["Password"];
+        string uid = configuration["UID"];
+        connection = "server=atr.eng.utah.edu;database = Team12ChessProject;uid = " + uid + ";password = " + password;
+    }
 
     [Test]
     public static void TestWithNoFilter()

@@ -32,7 +32,7 @@ public class PerformQueryTests
         bool showMoves = false;
 
         string result = PerformQuery(white, black, opening, winner, useDate, start, end, showMoves);
-        Assert.AreEqual("2999 results", ReadFirstLine(result));
+        Assert.That(ReadFirstLine(result), Is.EqualTo("2999 results"));
     }
 
     [Test]
@@ -48,7 +48,7 @@ public class PerformQueryTests
         bool showMoves = false;
 
         string result = PerformQuery(white, black, opening, winner, useDate, start, end, showMoves);
-        Assert.AreEqual("9 results", ReadFirstLine(result));
+        Assert.That(ReadFirstLine(result), Is.EqualTo("9 results"));
 
     }
 
@@ -65,7 +65,7 @@ public class PerformQueryTests
         bool showMoves = false;
 
         string result = PerformQuery(white, black, opening, winner, useDate, start, end, showMoves);
-        Assert.AreEqual("3 results", ReadFirstLine(result));
+        Assert.That(ReadFirstLine(result), Is.EqualTo("3 results"));
 
     }
 
@@ -82,7 +82,7 @@ public class PerformQueryTests
         bool showMoves = false;
 
         string result = PerformQuery(white, black, opening, winner, useDate, start, end, showMoves);
-        Assert.AreEqual("945 results", ReadFirstLine(result));
+        Assert.That(ReadFirstLine(result), Is.EqualTo("945 results"));
     }
 
 
@@ -98,15 +98,15 @@ public class PerformQueryTests
 
         string result1 = PerformQuery(white, black, opening, "W", useDate,
             start, end, showMoves);
-        Assert.AreEqual("8 results", ReadFirstLine(result1));
+        Assert.That(ReadFirstLine(result1), Is.EqualTo("8 results"));
 
         string result2 = PerformQuery(white, black, opening, "B", useDate,
             start, end, showMoves);
-        Assert.AreEqual("0 results", ReadFirstLine(result2));
+        Assert.That(ReadFirstLine(result2), Is.EqualTo("0 results"));
 
         string result3 = PerformQuery(white, black, opening, "D", useDate,
             start, end, showMoves);
-        Assert.AreEqual("1 results", ReadFirstLine(result3));
+        Assert.That(ReadFirstLine(result3), Is.EqualTo("1 results"));
 
     }
 
@@ -123,7 +123,7 @@ public class PerformQueryTests
 
         string result = PerformQuery(white, black, opening, winner, useDate,
             start, end, showMoves);
-        Assert.AreEqual("975 results", ReadFirstLine(result));
+        Assert.That(ReadFirstLine(result), Is.EqualTo("975 results"));
     }
 
     [Test]
@@ -152,7 +152,7 @@ public class PerformQueryTests
             "Kg2 Bb4 42.Rc7 Rc3 43.Ra7 Rc2 44.Ra6 g5 45.Ra7 h4 46.gxh4 gxh4 47.Rh7 Be1 \r\n" +
             "48.Rh6+ Ke7 49.Rg6 Rc3 50.Bd3 Ra3 51.Rg4 Bb4 52.Rxh4 Rxa4 53.Re4 Kf6 54.h4\r\n" +
             "Ra1 55.h5 Bd2 56.Rg4 Be3 57.Kf3 Rg1 58.Ra4 Bh6 59.Rxa5 Rg5 60.Rxg5 1/2-1/2";
-        Assert.AreEqual(expected, result);
+        Assert.That(result, Is.EqualTo(expected));
     }
 
     [Test]
@@ -168,7 +168,7 @@ public class PerformQueryTests
 
         string result = PerformQuery(white, black, opening, winner, useDate,
             start, end, showMoves);
-        Assert.AreEqual("7 results", ReadFirstLine(result));
+        Assert.That(ReadFirstLine(result), Is.EqualTo("7 results"));
     }
 
     internal static string ReadFirstLine(string s)
